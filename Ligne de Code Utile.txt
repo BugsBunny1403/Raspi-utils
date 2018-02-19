@@ -1,0 +1,38 @@
+Calibration et veille ecran ==> https://ouiaremakers.com/posts/tutoriel-diy-ecran-tactile-et-raspberry-pi
+Installation écran ===> https://github.com/goodtft/LCD-show/wiki
+Boot Touch Ui ===> https://github.com/BillyBlaze/OctoPrint-TouchUI/wiki/Setup:-Boot-to-Browser-(OctoPi-or-Jessie-Light)#upgrading-your-kernel
+Changement de Langue ==> runinstaller quiet vt.cur_default=1 elevator=deadline silentinstall lang=fr keyboard=fr
+ssh dans boot + wpa_supplicant https://raspberrypi.stackexchange.com/questions/10251/prepare-sd-card-for-wifi-on-headless-pi
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get dist-upgrade
+sudo apt -y install rpi-update 
+sudo rpi-update
+
+https://raspbian-france.fr/video-surveillance-raspberry-pi-camera/
+sudo apt-get install motion
+sudo modprobe bcm2835-v4l2
+Si tout c’est bien passé, il ne vous reste plus qu’à rendre cette modification permanente :
+
+echo "bcm2835-v4l2" | sudo tee -a /etc/modules
+sudo nano /etc/default/motion
+yes
+
+~/OctoPrint/venv/bin/octoprint
+
+
+
+
+raspistill -o timelapse_%05d.jpg -tl 3000 -t 7200000
+cd timelapse
+rm ../stills.txt
+ls > ../stills.txt
+sudo mencoder -nosound -ovc lavc -lavcopts vcodec=mpeg4:aspect=16/9:vbitrate=8000000 -vf scale=1920:1080 -o tlcam.avi -mf type=jpeg:fps=24 mf://@../stills.txt
+
+sed -i 's|jessie|stretch|' /etc/apt/sources.list
+
+
+cd /home/pi/timelapse/
+tar cf - ../timelapse --listed-incremental=/save/save.list -P | pv -s $(du -sb ../timelapse | awk '{print $1}') | gzip > Archive`date --rfc-3339=date`.tar.gz
+#tar zcvf Archive`date --rfc-3339=date`.tar --listed-incremental=/save/save.list -P
+
